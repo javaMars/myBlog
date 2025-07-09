@@ -1,0 +1,29 @@
+plugins {
+    id("java")
+}
+
+group = "org.sprint3"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.springframework:spring-test:5.3.27")
+
+    implementation("org.springframework:spring-context:6.2.8")
+    implementation("org.springframework:spring-webmvc:6.2.8")
+    implementation("org.springframework.data:spring-data-jdbc:2.4.12")
+
+    implementation("com.h2database:h2:2.2.220")
+
+    compileOnly("org.projectlombok:lombok:1.18.28")
+    annotationProcessor("org.projectlombok:lombok:1.18.28")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
