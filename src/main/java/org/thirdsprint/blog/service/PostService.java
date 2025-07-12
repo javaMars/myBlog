@@ -1,10 +1,11 @@
 package org.thirdsprint.blog.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.thirdsprint.blog.post.strategy.TextDisplayStrategy;
 import org.thirdsprint.blog.repository.PostRepository;
 import org.thirdsprint.blog.model.Post;
-
-import java.util.List;
 
 @Service
 public class PostService {
@@ -15,7 +16,7 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 }
