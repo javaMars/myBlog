@@ -29,7 +29,11 @@ public class PostController {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Post> postsPage;
 
-        postsPage = postService.findAll(pageable);
+        if (search != null && !search.trim().isEmpty()) {
+            postsPage = postService.findByTag(search.trim(), pageable);
+        } else {
+            postsPage = postService.findAll(pageable);
+        }
 
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("paging", new PagingWrapper<>(postsPage));

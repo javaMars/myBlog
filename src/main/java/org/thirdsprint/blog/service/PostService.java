@@ -19,4 +19,8 @@ public class PostService {
     public Page<Post> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
     }
+
+    public Page<Post> findByTag(String tag, Pageable pageable) {
+        return postRepository.findByTagNameContaining(tag, pageable);
+    }
 }
