@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     text CLOB,
-    likes_count INT DEFAULT 0
+    likes_count INT DEFAULT 0,
+    image_path VARCHAR(255) DEFAULT ''
 );
 
 -- Таблица тегов (каждый тег связан с постом)

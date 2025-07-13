@@ -1,5 +1,6 @@
 package org.thirdsprint.blog.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +12,14 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "org.thirdsprint.blog")
 public class WebConfig implements WebMvcConfigurer {
+    @Value("${app.upload.dir:${user.dir}/uploads/}")
+    private String uploadDir;
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
@@ -48,5 +52,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
+
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir);
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addRedirectViewController("/", "/posts");
     }
 }

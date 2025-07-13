@@ -2,7 +2,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.thirdsprint.blog.model.Post;
 import org.thirdsprint.blog.repository.PostRepository;
-import org.thirdsprint.blog.service.PostService;
+import org.thirdsprint.blog.service.PostServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,9 +16,9 @@ import static org.mockito.Mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-public class PostServiceTest {
+public class PostServiceImplTest {
 
-    private PostService postService;
+    private PostServiceImpl postServiceImpl;
     private PostRepository postRepository;
 
     @BeforeEach
@@ -33,14 +33,14 @@ public class PostServiceTest {
         when(postRepository.findAll(any(Pageable.class))).thenReturn(postPage);
 
         // Создаем сервис вручную, передавая мок репозитория
-        postService = new PostService(postRepository);
+        postServiceImpl = new PostServiceImpl(postRepository);
     }
 
     @Test
     public void testFindAllReturnsData() {
         Pageable pageable = PageRequest.of(0, 10); // первая страница, 10 элементов
 
-        Page<Post> postsPage = postService.findAll(pageable);
+        Page<Post> postsPage = postServiceImpl.findAll(pageable);
 
         assertNotNull(postsPage);
         assertFalse(postsPage.isEmpty());

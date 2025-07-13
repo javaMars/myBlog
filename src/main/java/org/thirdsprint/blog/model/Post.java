@@ -9,6 +9,7 @@ import org.thirdsprint.blog.post.strategy.TextDisplayStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -24,7 +25,17 @@ public class Post {
     @Column
     private String text;
     @Column(name = "likes_count")
-    private Long likesCount;
+    private Long likesCount = 0L;;
+    @Column(name = "image_path")
+    private String imagePath = "";
+
+    @Transient
+    public String getImagePath() {
+        if (Objects.equals(imagePath, "") && id != null) {
+            return "/images/" + id + ".jpg";
+        }
+        return imagePath;
+    }
 
     public String getTextPreview() {
         return new LinesPreviewStrategy(3).getText(this);
