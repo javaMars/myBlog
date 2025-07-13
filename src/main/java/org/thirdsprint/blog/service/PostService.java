@@ -2,25 +2,19 @@ package org.thirdsprint.blog.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.thirdsprint.blog.post.strategy.TextDisplayStrategy;
-import org.thirdsprint.blog.repository.PostRepository;
+import org.springframework.web.multipart.MultipartFile;
 import org.thirdsprint.blog.model.Post;
 
-@Service
-public class PostService {
+import java.io.IOException;
+import java.util.Optional;
 
-    private final PostRepository postRepository;
+public interface PostService {
+    Post createPost(String title, MultipartFile image, String tags, String text) throws IOException;
+    Post updatePost(Long id, String title, MultipartFile image, String tags, String text) throws IOException;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
+    Page<Post> findByTag(String trim, Pageable pageable);
 
-    public Page<Post> findAll(Pageable pageable) {
-        return postRepository.findAll(pageable);
-    }
+    Page<Post> findAll(Pageable pageable);
 
-    public Page<Post> findByTag(String tag, Pageable pageable) {
-        return postRepository.findByTagNameContaining(tag, pageable);
-    }
+    Optional<Post> findPostById(Long id);
 }
