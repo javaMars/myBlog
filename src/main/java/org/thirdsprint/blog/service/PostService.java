@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.util.Optional;
 
 public interface PostService {
-    Post createPost(String title, MultipartFile image, String tags, String text) throws IOException;
-    Post updatePost(Long id, String title, MultipartFile image, String tags, String text) throws IOException;
-
     Page<Post> findByTag(String trim, Pageable pageable);
 
     Page<Post> findAll(Pageable pageable);
 
     Optional<Post> findPostById(Long id);
+
+    Post createPost(String title, MultipartFile image, String tags, String text) throws IOException;
+
+    Post updatePost(Long id, String title, MultipartFile image, String tags, String text) throws IOException, IllegalArgumentException;
+
+    void updatePostLike(Long id, boolean like) throws IllegalArgumentException;
 }
