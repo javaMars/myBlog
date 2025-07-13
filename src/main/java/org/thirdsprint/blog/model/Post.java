@@ -7,9 +7,7 @@ import org.thirdsprint.blog.post.strategy.FullTextStrategy;
 import org.thirdsprint.blog.post.strategy.LinesPreviewStrategy;
 import org.thirdsprint.blog.post.strategy.TextDisplayStrategy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Setter
 @Getter
@@ -41,8 +39,13 @@ public class Post {
         return new LinesPreviewStrategy(3).getText(this);
     }
 
-    public String getFullText() {
-        return new FullTextStrategy().getText(this);
+    public List<String> getTextParts() {
+        String fullText = new FullTextStrategy().getText(this);
+
+        if (fullText == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(fullText.split("\\r?\\n"));
     }
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

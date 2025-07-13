@@ -4,6 +4,10 @@ java {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
+}
+
 plugins {
     id("java")
     id("war")
