@@ -67,7 +67,7 @@ public class PostController {
         Post post = postService.findPostById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + id));
         model.addAttribute("post", post);
-        return "post_form";
+        return "post";
     }
 
     @PostMapping("/posts")
