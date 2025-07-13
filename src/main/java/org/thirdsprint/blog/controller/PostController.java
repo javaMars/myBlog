@@ -56,20 +56,6 @@ public class PostController {
         return "posts";
     }
 
-    @GetMapping("/posts/add")
-    public String newPostForm(Model model) {
-        model.addAttribute("post", null);
-        return "add-post";
-    }
-
-    @GetMapping("/posts/{id}")
-    public String editPostForm(@PathVariable Long id, Model model) {
-        Post post = postService.findPostById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + id));
-        model.addAttribute("post", post);
-        return "post";
-    }
-
     @PostMapping("/posts")
     public String createPost(@RequestParam("title") String title,
                              @RequestParam("image") MultipartFile image,
@@ -80,13 +66,26 @@ public class PostController {
         return "redirect:/posts";
     }
 
-    @PostMapping("/posts/{id}")
-    public String updatePost(@PathVariable Long id,
-                             @RequestParam("title") String title,
-                             @RequestParam("image") MultipartFile image,
-                             @RequestParam("tags") String tags,
-                             @RequestParam("text") String text) throws IOException {
-        postService.updatePost(id, title, image, tags, text);
-        return "redirect:/posts";
+    @GetMapping("/posts/add")
+    public String newPostForm(Model model) {
+        model.addAttribute("post", null);
+        return "add-post";
+    }
+
+    @GetMapping("/posts/{id}")
+    public String viewPostForm(@PathVariable Long id, Model model) throws IllegalArgumentException {
+        Post post = postService.findPostById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + id));
+        model.addAttribute("post", post);
+        return "post";
+    }
+
+    @PostMapping("/posts/{id}/like")
+    public String likePost (
+            @PathVariable Long id,
+            @RequestParam("like") boolean likeValue) throws IllegalArgumentException {
+        postService.updatePostLike(id, likeValue);
+
+        return "redirect:/posts/" + id;
     }
 }

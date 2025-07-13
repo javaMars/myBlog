@@ -1,6 +1,7 @@
 package org.thirdsprint.blog.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,9 +82,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(Long id, String title, MultipartFile image, String tagsText, String text) throws IOException {
+    public Post updatePost(Long id, String title, MultipartFile image, String tagsText, String text) throws IOException, IllegalArgumentException {
         Optional<Post> optionalPost = postRepository.findById(id);
-        Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + id));
+        Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Пост с id:" + id + " не найден"));
 
         post.setTitle(title);
         post.setText(text);
@@ -127,5 +128,18 @@ public class PostServiceImpl implements PostService {
             Files.createDirectories(uploadPath);
         }
         Files.copy(image.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void updatePostLike(Long id, boolean like) throws IllegalArgumentException {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Пост с id:" + id + " не найден"));
+
+        if (like) {
+            post.setLikesCount(post.getLikesCount() + 1);
+        } else {
+            post.setLikesCount(post.getLikesCount() - 1);
+        }
+
+        postRepository.save(post);
     }
 }
