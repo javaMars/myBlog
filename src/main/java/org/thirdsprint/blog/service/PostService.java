@@ -20,4 +20,6 @@ public interface PostService {
     Post updatePost(Long id, String title, MultipartFile image, String tags, String text) throws IOException, IllegalArgumentException;
 
     void updatePostLike(Long id, boolean like) throws IllegalArgumentException;
+
+    void deletePost(Long id);
 }

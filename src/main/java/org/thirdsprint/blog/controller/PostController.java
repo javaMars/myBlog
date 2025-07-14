@@ -60,7 +60,7 @@ public class PostController {
         return "posts";
     }
 
-    // Добавление поста
+    // Создание нового поста
     @PostMapping("/posts")
     public String createPost(@RequestParam("title") String title,
                              @RequestParam("image") MultipartFile image,
@@ -71,14 +71,14 @@ public class PostController {
         return "redirect:/posts";
     }
 
-    // Страница добавления поста
+    // Форма добавления нового поста
     @GetMapping("/posts/add")
     public String newPostForm(Model model) {
         model.addAttribute("post", null);
         return "add-post";
     }
 
-    //
+    // Просмотр поста
     @GetMapping("/posts/{id}")
     public String viewPostForm(@PathVariable Long id, HttpServletRequest request, Model model) throws IllegalArgumentException {
         Post post = postService.findPostById(id)
@@ -86,6 +86,33 @@ public class PostController {
         model.addAttribute("post", post);
         model.addAttribute("contextPath", request.getContextPath());
         return "post";
+    }
+
+    // Форма для редактирования существующего поста
+    @GetMapping("/posts/{id}/edit")
+    public String editPostForm(@PathVariable Long id, Model model) {
+        Post post = postService.findPostById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Пост с id:" + id + " не найден"));
+        model.addAttribute("post", post);
+        return "add-post"; // тот же шаблон, что и для добавления
+    }
+
+    // Обновление существующего поста
+    @PostMapping("/posts/{id}")
+    public String updatePost(@PathVariable("id") Long id,
+                             @RequestParam("title") String title,
+                             @RequestParam("image") MultipartFile image,
+                             @RequestParam("tags") String tags,
+                             @RequestParam("text") String text) throws IOException {
+        postService.updatePost(id, title, image, tags, text);
+        return "redirect:/posts/" + id;
+    }
+
+    // Удаление поста
+    @PostMapping("/posts/{id}/delete")
+    public String deletePost(@PathVariable("id") Long id) {
+        postService.deletePost(id);
+        return "redirect:/posts";
     }
 
     // Обработка лайка и дизлайка поста

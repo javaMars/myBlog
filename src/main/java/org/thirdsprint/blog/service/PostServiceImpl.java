@@ -12,6 +12,7 @@ import org.thirdsprint.blog.repository.PostRepository;
 import org.thirdsprint.blog.model.Post;
 
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,18 @@ public class PostServiceImpl implements PostService {
         Post savedPost = postRepository.save(post);
 
         if (image != null && !image.isEmpty()) {
-            String filename = savedPost.getId() + ".jpg";
+            String originalFilename = image.getOriginalFilename();
+            String extension = "";
+
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+            }
+
+            if (!(extension.equals("jpg") || extension.equals("jpeg"))) {
+                throw new IllegalArgumentException("Только файлы формата JPG/JPEG разрешены");
+            }
+
+            String filename = savedPost.getId() + "." + extension;
             saveImageFile(filename, image);
             savedPost.setImagePath(uploadUrl + filename);
 
@@ -94,7 +106,8 @@ public class PostServiceImpl implements PostService {
             String originalFilename = image.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
 
-            if (!(extension.equals("jpg") || extension.equals("jpeg"))) {
+            extension = extension.startsWith(".") ? extension.substring(1) : extension;
+            if (!(extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg"))) {
                 throw new IllegalArgumentException("Только файлы формата JPG/JPEG разрешены");
             }
 
@@ -104,22 +117,34 @@ public class PostServiceImpl implements PostService {
         }
 
         // Обработка тегов
-        List<Tag> tags = Arrays.stream(tagsText.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(name -> {
-                    Tag tag = new Tag();
-                    tag.setName(name);
-                    tag.setPost(post);
-                    return tag;
-                })
-                .toList();
+        List<Tag> tags;
+
+        if (tagsText == null || tagsText.trim().isEmpty()) {
+            tags = new ArrayList<>();  // Пустой список тегов
+        } else {
+            tags = Arrays.stream(tagsText.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(name -> {
+                        Tag tag = new Tag();
+                        tag.setName(name);
+                        tag.setPost(post);
+                        return tag;
+                    })
+                    .toList();
+        }
 
         // Очищаем старые теги и добавляем новые
         post.getTags().clear();
         post.getTags().addAll(tags);
 
         return postRepository.save(post);
+    }
+
+    public void deletePost(Long id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Пост с id:" + id + " не найден"));
+        postRepository.delete(post);
     }
 
     private void saveImageFile(String filename, MultipartFile image) throws IOException {
