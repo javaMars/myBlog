@@ -1,5 +1,6 @@
 package org.thirdsprint.blog.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.thirdsprint.blog.dto.PagingWrapper;
 import org.thirdsprint.blog.model.Post;
+import org.thirdsprint.blog.service.CommentService;
 import org.thirdsprint.blog.service.PostService;
 
 import java.io.IOException;
@@ -24,9 +26,11 @@ import java.io.IOException;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, CommentService commentService) {
         this.postService = postService;
+        this.commentService = commentService;
     }
 
     @Bean
@@ -56,6 +60,7 @@ public class PostController {
         return "posts";
     }
 
+    // Добавление поста
     @PostMapping("/posts")
     public String createPost(@RequestParam("title") String title,
                              @RequestParam("image") MultipartFile image,
@@ -66,20 +71,24 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    // Страница добавления поста
     @GetMapping("/posts/add")
     public String newPostForm(Model model) {
         model.addAttribute("post", null);
         return "add-post";
     }
 
+    //
     @GetMapping("/posts/{id}")
-    public String viewPostForm(@PathVariable Long id, Model model) throws IllegalArgumentException {
+    public String viewPostForm(@PathVariable Long id, HttpServletRequest request, Model model) throws IllegalArgumentException {
         Post post = postService.findPostById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Пост с id:" + id + " не найден"));
         model.addAttribute("post", post);
+        model.addAttribute("contextPath", request.getContextPath());
         return "post";
     }
 
+    // Обработка лайка и дизлайка поста
     @PostMapping("/posts/{id}/like")
     public String likePost (
             @PathVariable Long id,
@@ -87,5 +96,30 @@ public class PostController {
         postService.updatePostLike(id, likeValue);
 
         return "redirect:/posts/" + id;
+    }
+
+    // Добавление комментария
+    @PostMapping("/posts/{postId}/comments")
+    public String addComment(@PathVariable Long postId,
+                             @RequestParam("text") String text) {
+        commentService.addComment(postId, text);
+        return "redirect:/posts/" + postId;
+    }
+
+    // Редактирование комментария
+    @PostMapping("/posts/{postId}/comments/{commentId}")
+    public String updateComment(@PathVariable Long postId,
+                                @PathVariable Long commentId,
+                                @RequestParam("text") String text) {
+        commentService.updateComment(commentId, text);
+        return "redirect:/posts/" + postId;
+    }
+
+    // Удаление комментария
+    @PostMapping("/posts/{postId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Long postId,
+                                @PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return "redirect:/posts/" + postId;
     }
 }

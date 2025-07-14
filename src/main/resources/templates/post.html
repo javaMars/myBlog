@@ -3,23 +3,42 @@
 
 <head>
     <title>Витрина товаров</title>
-    <script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var contextPath = /*[[${contextPath}]]*/ '';;
+        const postId = [[${post.id}]];
         function editComment(id) {
-            var comment = document.getElementById("comment" + id);
-            var newComment = document.createElement("textarea");
-            newComment.innerHTML = comment.innerHTML;
-            newComment.rows = 3;
-            newComment.name = "text";
-            newComment.style = "width:100%;";
-            comment.parentNode.replaceChild(newComment, comment);
+            var commentSpan = document.getElementById("comment" + id);
+            if (!commentSpan) return;
 
-            var button = document.getElementById(id);
-            button.remove();
+            var textarea  = document.createElement("textarea");
+            textarea.rows = 3;
+            textarea.name = "text";
+            textarea.style = "width:100%;";
+            textarea.value = commentSpan.textContent.trim();
+
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = contextPath + '/posts/' + postId + '/comments/' + id;;
+
+            form.appendChild(textarea);
 
             var newButton = document.createElement("button");
             newButton.innerHTML = "&#10003;";
-            newButton.style="float:right;"
-            newComment.parentNode.appendChild(newButton);
+            newButton.type = "submit";
+            newButton.style.float = "right;"
+            form.appendChild(newButton);
+
+            commentSpan.parentNode.replaceChild(form, commentSpan);
+            textarea.focus();
+
+            // Отправка формы по Ctrl+Enter
+            textarea.addEventListener('keydown', function(event) {
+                if (event.ctrlKey && event.key === 'Enter') {
+                    event.preventDefault();
+                    form.submit();
+                }
+            });
         }
 
         function addComment(id) {
@@ -39,6 +58,7 @@
             newButton.style="float:right;"
             form.appendChild(newButton);
         }
+        /*]]>*/
     </script>
 </head>
 
@@ -90,8 +110,8 @@
         <tr th:each="comment : ${post.getComments()}">
             <td style="border-left:thin solid grey;">
                 <form method="POST" th:action="@{/posts/{id}/comments/{commentId}(id=${post.id},commentId=${comment.id})}">
-                    <span th:id="${'comment'+comment.getId()}" th:text="${comment.getText()}"></span>
-                    <button th:id="${comment.getId()}" onclick="editComment(this.id)" style="float:right;">&#9998;</button>
+                    <span th:id="${'comment'+comment.getId()}" th:text="${comment.getText()}" th:onclick="'editComment(' + ${comment.getId()} + ')'" style="cursor:pointer;"></span>
+                    <button th:id="'btn' + ${comment.getId()}" th:onclick="'editComment(' + ${comment.getId()} + ')'" type="button" style="float:right;">&#9998;</button>
                 </form>
             </td>
             <td>
