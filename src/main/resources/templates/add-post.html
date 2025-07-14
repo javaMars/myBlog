@@ -14,32 +14,37 @@
         <tr>
             <td>
                 <h3>Название</h3>
-                <textarea rows="2" style="width: 100%;" name="title" th:text="${post==null ? '' : post.getTitle()}"></textarea>
+                <textarea rows="2" style="width: 100%;" name="title" th:text="${post==null} ? '' : ${post.title}"></textarea>
             </td>
         </tr>
         <tr>
             <td>
                 <h3>Изображение</h3>
                 <input type="file" name="image">
+                <div th:if="${post != null and post.imagePath != null}">
+                    <p>Текущее изображение:</p>
+                    <img th:src="@{${post.imagePath}}" alt="Изображение поста" style="max-width: 300px;"/>
+                </div>
             </td>
         </tr>
         <tr>
             <td>
-                <h3>Теги</h3>
-                <textarea rows="2" style="width: 100%;" name="tags" th:text="${post==null ? '' : post.getTagsAsText()}"></textarea>
+                <h3>Теги (через запятую)</h3>
+                <textarea rows="2" style="width: 100%;" name="tags" th:text="${post==null} ? '' : ${post.getTagsAsText()}"></textarea>
             </td>
         </tr>
         <tr>
             <td>
                 <h3>Текст</h3>
-                <textarea rows="30" style="width: 100%;" name="text" th:text="${post==null ? '' : post.getText()}"></textarea>
+                <textarea rows="30" style="width: 100%;" name="text" th:text="${post==null} ? '' : ${post.text}"></textarea>
             </td>
         </tr>
         <tr>
             <td>
-                <button style="float:right;" th:text="${post==null ? 'Сохранить' : 'Редактировать'}"></button>
+                <button style="float:right;" type="submit" th:text="${post==null ? 'Сохранить' : 'Редактировать'}"></button>
             </td>
         </tr>
     </table>
 </form>
 </body>
+</html>

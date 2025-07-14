@@ -8,6 +8,7 @@ import org.thirdsprint.blog.post.strategy.LinesPreviewStrategy;
 import org.thirdsprint.blog.post.strategy.TextDisplayStrategy;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -26,6 +27,12 @@ public class Post {
     private Long likesCount = 0L;;
     @Column(name = "image_path")
     private String imagePath = "";
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Tag> tags = new ArrayList<>();
 
     @Transient
     public String getImagePath() {
@@ -48,9 +55,12 @@ public class Post {
         return Arrays.asList(fullText.split("\\r?\\n"));
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Tag> tags = new ArrayList<>();
+    public String getTagsAsText() {
+        if (tags == null || tags.isEmpty()) {
+            return "";
+        }
+        return tags.stream()
+                .map(Tag::getName)
+                .collect(Collectors.joining(", "));
+    }
 }

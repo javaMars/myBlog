@@ -22,4 +22,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     Optional<Post> findById(Long id);
 
     Post save(Post post);
+
+    void delete(Post post);
 }
