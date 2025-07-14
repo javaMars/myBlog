@@ -111,7 +111,7 @@ public class PostServiceImpl implements PostService {
                 throw new IllegalArgumentException("Только файлы формата JPG/JPEG разрешены");
             }
 
-            String filename = post.getId() + extension;
+            String filename = post.getId() + "." + extension;
             saveImageFile(filename, image);
             post.setImagePath(uploadUrl + filename);
         }

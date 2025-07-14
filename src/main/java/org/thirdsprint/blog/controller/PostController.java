@@ -55,7 +55,7 @@ public class PostController {
 
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("paging", new PagingWrapper<>(postsPage));
-        model.addAttribute("search", search);
+        model.addAttribute("search", search != null ? search : "");
 
         return "posts";
     }
