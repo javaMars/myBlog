@@ -1,12 +1,10 @@
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.multipart.MultipartFile;
-import org.thirdsprint.blog.config.TestJpaConfig;
-import org.thirdsprint.blog.model.Post;
-import org.thirdsprint.blog.model.Tag;
-import org.thirdsprint.blog.repository.PostRepository;
-import org.thirdsprint.blog.service.PostServiceImpl;
+import ru.practicum.sprint4.spring.boot.blog.model.Post;
+import ru.practicum.sprint4.spring.boot.blog.model.Tag;
+import ru.practicum.sprint4.spring.boot.blog.repository.PostRepository;
+import ru.practicum.sprint4.spring.boot.blog.service.PostServiceImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
