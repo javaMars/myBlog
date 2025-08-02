@@ -1,3 +1,9 @@
+package ru.practicum.sprint4.spring.boot.blog;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,13 +29,13 @@ import static org.mockito.Mockito.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class PostServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     private PostServiceImpl postServiceImpl;
 
-    @MockBean
+    @Mock
     private PostRepository postRepository;
 
     @BeforeEach
@@ -38,15 +44,16 @@ public class PostServiceImplTest {
         TestUtils.setField(postServiceImpl, "uploadDir", "target/test-uploads");
         TestUtils.setField(postServiceImpl, "uploadUrl", "/uploads/");
 
-        List<Post> postList = Arrays.asList(new Post(), new Post());
-        Page<Post> postPage = new PageImpl<>(postList);
 
-        when(postRepository.findAll(any(Pageable.class))).thenReturn(postPage);
     }
 
     @Test
     public void testFindAllReturnsData_shouldReturnPageWithPosts() {
         Pageable pageable = PageRequest.of(0, 10);
+        List<Post> postList = Arrays.asList(new Post(), new Post());
+        Page<Post> postPage = new PageImpl<>(postList);
+
+        when(postRepository.findAll(any(Pageable.class))).thenReturn(postPage);
 
         Page<Post> postsPage = postServiceImpl.findAll(pageable);
 

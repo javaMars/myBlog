@@ -1,3 +1,5 @@
+package ru.practicum.sprint4.spring.boot.blog;
+
 public class TestUtils {
     static void setField(Object target, String fieldName, Object value) {
         try {
