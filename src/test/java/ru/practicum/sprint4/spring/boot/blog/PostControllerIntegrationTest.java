@@ -1,22 +1,28 @@
+package ru.practicum.sprint4.spring.boot.blog;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import ru.practicum.sprint4.spring.boot.blog.repository.PostRepository;
-import ru.practicum.sprint4.spring.boot.blog.service.CommentService;
-import ru.practicum.sprint4.spring.boot.blog.service.PostService;
-
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Transactional
 public class PostControllerIntegrationTest {
 
     @Autowired
@@ -25,13 +31,29 @@ public class PostControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private DataSource dataSource;
+
+    @Test
+    void printDataSourceUrl() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            String url = connection.getMetaData().getURL();
+            System.out.println("Connected to DB URL: " + url);
+            // Можно добавить assert, например:
+            assertTrue(url.contains("jdbc:h2:mem:testdb"));
+        }
+    }
+
     @BeforeEach
     void setup() {
         // Очистка и заполнение тестовых данных в базе
         jdbcTemplate.execute("DELETE FROM posts");
         jdbcTemplate.execute("DELETE FROM tags");
-        jdbcTemplate.execute("INSERT INTO posts (id, title, text, likes_count) VALUES (1, 'Тестовый пост', 'Текст поста', 1)");
-        jdbcTemplate.execute("INSERT INTO tags (id, post_id, name) VALUES (1, 1, 'tag1')");
+        jdbcTemplate.execute("ALTER TABLE posts ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE tags ALTER COLUMN id RESTART WITH 1");
+
+        jdbcTemplate.execute("INSERT INTO posts (title, text, likes_count) VALUES ('Тестовый пост', 'Текст поста', 1)");
+        jdbcTemplate.execute("INSERT INTO tags (post_id, name) VALUES (1, 'tag1')");
     }
 
     @Test
