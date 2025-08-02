@@ -1,55 +1,32 @@
-import jakarta.persistence.Column;
-import jakarta.persistence.Lob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.practicum.sprint4.spring.boot.blog.config.AppConfig;
-import ru.practicum.sprint4.spring.boot.blog.config.TestJpaConfig;
-import ru.practicum.sprint4.spring.boot.blog.config.WebConfig;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import ru.practicum.sprint4.spring.boot.blog.repository.PostRepository;
 import ru.practicum.sprint4.spring.boot.blog.service.CommentService;
 import ru.practicum.sprint4.spring.boot.blog.service.PostService;
-import org.springframework.mock.web.MockMultipartFile;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestJpaConfig.class, WebConfig.class, AppConfig.class})
+@SpringBootTest
+@AutoConfigureMockMvc
 public class PostControllerIntegrationTest {
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private PostService postService;
-
-    @Autowired
-    private CommentService commentService;
-
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-
         // Очистка и заполнение тестовых данных в базе
         jdbcTemplate.execute("DELETE FROM posts");
         jdbcTemplate.execute("DELETE FROM tags");
@@ -64,9 +41,7 @@ public class PostControllerIntegrationTest {
                         .param("pageSize", "2"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("posts"))
-                .andExpect(model().attributeExists("posts"))
-                .andExpect(model().attributeExists("paging"))
-                .andExpect(model().attributeExists("search"))
+                .andExpect(model().attributeExists("posts", "paging", "search"))
                 .andExpect(model().attribute("search", ""));
     }
 

@@ -1,3 +1,6 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,21 +18,22 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+@SpringBootTest
 public class PostServiceImplTest {
 
+    @Autowired
     private PostServiceImpl postServiceImpl;
+
+    @MockBean
     private PostRepository postRepository;
 
     @BeforeEach
     public void setUp() {
-        postRepository = Mockito.mock(PostRepository.class);
-        postServiceImpl = new PostServiceImpl(postRepository);
 
         TestUtils.setField(postServiceImpl, "uploadDir", "target/test-uploads");
         TestUtils.setField(postServiceImpl, "uploadUrl", "/uploads/");
